@@ -29,10 +29,15 @@
             padding-bottom: 3px;
         }
 
+        .fileMessage
+        {
+            margin-right: 10px;
+            margin-left: 10px;
+        }
+
         div.logBlockList
         {
-            width: 100%;
-            
+            width: 100%;   
         }
 
         div.logBlock
@@ -88,8 +93,25 @@
     <?php
     if (isset($_FILES['logFile_Input']) && $_FILES['logFile_Input']['size'] > 0)
     {
+        // Check File Size //
+        if ($_FILES["logFile_Input"]["size"] > 5000000) {
+            ?>
+            <h4 class="fileMessage">Sorry, your file is too large. Size limit: 5MB</h4>
+            <?php
+            die;
+        }
+
+        // Allow certain file formats //
+        if(!str_ends_with($_FILES['logFile_Input']['name'],".log")) {
+            ?>
+            <h4 class="fileMessage">Sorry, only .log files are allowed.</h4>
+            <?php
+            die;
+        }
+
         foreach ($_FILES as $key => $fileData) {
             ?>
+            <h4 class="fileMessage">Displaying: <?=$fileData['name']?></h4>
             <div class="logBlockList">
             <?php
             $logBlockSplitString = "<![LOG[";
@@ -102,7 +124,7 @@
                 
                 if ($id == 0)
                 {
-                    # Skip first block as it is always empty
+                    // Skip first block as it is always empty //
                     continue;
                 }
                 $blockData = substr($block,0,strpos($block,$logBlockDataEndString));
@@ -137,6 +159,12 @@
             </div>
             <?php
         }           
+    }
+    else
+    {
+        ?>
+            <h4 style="margin-right: 10px; margin-left: 10px;">No file selected!</h4>
+        <?php
     }
     ?>
 </body>
